@@ -13,7 +13,6 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-fwnode.h>
-#include <media/ar0234.h>
 #include <linux/version.h>
 
 #define AR0234_REG_VALUE_08BIT		1
@@ -1370,8 +1369,6 @@ struct ar0234 {
 	/* Streaming on/off */
 	bool streaming;
 
-	// struct ar0234_platform_data *platform_data;
-
 	s64 sub_stream;
 };
 
@@ -1565,26 +1562,6 @@ static int ar0234_set_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_FLASH_STROBE_SOURCE:
 		dev_dbg(&client->dev, "set led flash source %d\n", ctrl->val);
 		break;
-
-	// case V4L2_CID_FLASH_STROBE:
-	// 	if (ar0234->platform_data->gpios[0] != -1) {
-	// 		if (ar0234->strobe_source->val ==
-	// 				V4L2_FLASH_STROBE_SOURCE_SOFTWARE)
-	// 			gpio_set_value(ar0234->platform_data->gpios[0], 1);
-	// 	}
-	// 	dev_info(&client->dev, "turn on led %d\n", ctrl->val);
-
-	// 	break;
-
-	// case V4L2_CID_FLASH_STROBE_STOP:
-	// 	if (ar0234->platform_data->gpios[0] != -1) {
-	// 		if (ar0234->strobe_source->val ==
-	// 				V4L2_FLASH_STROBE_SOURCE_SOFTWARE)
-	// 			gpio_set_value(ar0234->platform_data->gpios[0], 0);
-	// 	}
-	// 	dev_info(&client->dev, "turn off led %d\n", ctrl->val);
-	// 	break;
-
 	case V4L2_CID_FLASH_TIMEOUT:
 		ret = ar0234_read_reg(ar0234, AR0234_REG_LED_FLASH_CONTROL,
 				AR0234_REG_VALUE_16BIT, &val);
@@ -1764,15 +1741,11 @@ static int ar0234_init_controls(struct ar0234 *ar0234)
 	ar0234->timeout = v4l2_ctrl_new_std(ctrl_hdlr, &ar0234_ctrl_ops,
 			V4L2_CID_FLASH_TIMEOUT, -128, 127, 1, 0);
 
-	// ar0234_csi_port.def = ar0234->platform_data->port;
-	// ar0234->csi_port =
-	// 	v4l2_ctrl_new_custom(ctrl_hdlr, &ar0234_csi_port, NULL);
 	ar0234_i2c_bus.def = i2c_adapter_id(client->adapter);
 	ar0234->i2c_bus =
 		v4l2_ctrl_new_custom(ctrl_hdlr, &ar0234_i2c_bus, NULL);
 	ar0234_i2c_id.def = client->addr;
 	ar0234->i2c_id = v4l2_ctrl_new_custom(ctrl_hdlr, &ar0234_i2c_id, NULL);
-	// ar0234_i2c_slave_address.def = ar0234->platform_data->i2c_slave_address;
 	ar0234->i2c_slave_address = v4l2_ctrl_new_custom(ctrl_hdlr, &ar0234_i2c_slave_address, NULL);
 	ar0234_fps.def = ar0234->cur_mode->fps;
 	ar0234->fps = v4l2_ctrl_new_custom(ctrl_hdlr, &ar0234_fps, NULL);
@@ -1860,8 +1833,6 @@ static void ar0234_stop_streaming(struct ar0234 *ar0234)
 	/*
 	 * turn off flash, clear possible noise.
 	 */
-	// if (ar0234->platform_data->gpios[0] != -1)
-	// 	gpio_set_value(ar0234->platform_data->gpios[0], 0);
 }
 
 static int ar0234_set_stream(struct v4l2_subdev *sd, int enable)
@@ -2209,23 +2180,6 @@ static void ar0234_remove(struct i2c_client *client)
 irqreturn_t ar0234_threaded_irq_fn(int irq, void *dev_id)
 {
 	struct ar0234 *ar0234 = dev_id;
-
-// 	if ((ar0234->platform_data->gpios[0] != -1) && (ar0234->platform_data->irq_pin != -1)) {
-// 		mutex_lock(&ar0234->mutex);
-// 		if (ar0234->streaming == false) {
-// 			gpio_set_value(ar0234->platform_data->gpios[0], 0);
-// 			goto ar0234_irq_handled;
-// 		}
-
-// 		if (ar0234->strobe_source->val == V4L2_FLASH_STROBE_SOURCE_EXTERNAL) {
-// 			gpio_set_value(ar0234->platform_data->gpios[0],
-// 					gpio_get_value(ar0234->platform_data->irq_pin));
-// 		}
-
-// ar0234_irq_handled:
-// 		mutex_unlock(&ar0234->mutex);
-// 	}
-
 	return IRQ_HANDLED;
 }
 
@@ -2238,22 +2192,12 @@ static int ar0234_probe(struct i2c_client *client)
 	if (!ar0234)
 		return -ENOMEM;
 
-	// ar0234->platform_data = client->dev.platform_data;
-	// if (ar0234->platform_data == NULL) {
-	// 	dev_err(&client->dev, "no platform data provided\n");
-	// 	return -EINVAL;
-	// }
 	v4l2_i2c_subdev_init(&ar0234->sd, client, &ar0234_subdev_ops);
 	ret = ar0234_identify_module(ar0234);
 	if (ret) {
 		dev_err(&client->dev, "failed to find sensor: %d", ret);
 		return ret;
 	}
-
-	// if (ar0234->platform_data->suffix)
-	// 	snprintf(ar0234->sd.name,
-	// 			sizeof(ar0234->sd.name), "ar0234 %c",
-	// 			ar0234->platform_data->suffix);
 
 	mutex_init(&ar0234->mutex);
 	ar0234->cur_mode = &supported_modes[0];
@@ -2273,35 +2217,6 @@ static int ar0234_probe(struct i2c_client *client)
 		dev_err(&client->dev, "failed to init entity pads: %d", ret);
 		goto probe_error_v4l2_ctrl_handler_free;
 	}
-
-	// if ((ar0234->platform_data->gpios[0] != -1) && (ar0234->platform_data->irq_pin != -1)) {
-	// 	ret = devm_gpio_request(&client->dev,
-	// 			ar0234->platform_data->irq_pin,
-	// 			ar0234->platform_data->irq_pin_name);
-	// 	if (ret) {
-	// 		dev_err(&client->dev, "IRQ pin request failed!\n");
-	// 		goto probe_error_v4l2_ctrl_handler_free;
-	// 	}
-	// 	gpio_direction_input(ar0234->platform_data->irq_pin);
-	// 	ret = devm_request_threaded_irq(&client->dev,
-	// 			gpio_to_irq(ar0234->platform_data->irq_pin),
-	// 			NULL, ar0234_threaded_irq_fn,
-	// 			ar0234->platform_data->irq_pin_flags,
-	// 			ar0234->platform_data->irq_pin_name,
-	// 			ar0234);
-	// 	if (ret) {
-	// 		dev_err(&client->dev, "IRQ request failed!\n");
-	// 		goto probe_error_v4l2_ctrl_handler_free;
-	// 	}
-
-	// 	ret = devm_gpio_request_one(&client->dev,
-	// 			ar0234->platform_data->gpios[0],
-	// 			GPIOF_OUT_INIT_LOW, "LED");
-	// 	if (ret) {
-	// 		dev_err(&client->dev, "LED GPIO pin request failed!\n");
-	// 		goto probe_error_v4l2_ctrl_handler_free;
-	// 	}
-	// }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
 	ret = v4l2_async_register_subdev_sensor_common(&ar0234->sd);

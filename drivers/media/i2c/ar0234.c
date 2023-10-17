@@ -138,6 +138,7 @@ struct ar0234_mode {
 	const struct ar0234_reg_list reg_list;
 };
 
+/*
 static const struct ar0234_reg freq_1280x960_10bit_4lane_300M[] = {
 	{0x302A, 0x0005},
 	{0x302C, 0x0002},
@@ -202,6 +203,7 @@ static const struct ar0234_reg freq_1280x960_8bit_4lane_240M[] = {
 	{0x3354, 0x002a},
 	{0x3354, 0x002a},
 };
+*/
 
 static const struct ar0234_reg freq_1280x960_10bit_2lane_360M[] = {
 	{0x302A, 0x0005},
@@ -234,6 +236,7 @@ static const struct ar0234_reg freq_1280x960_10bit_2lane_360M[] = {
 	{0x31D0, 0x0000},
 };
 
+/*
 static const struct ar0234_reg freq_1280x960_8bit_2lane_288M[] = {
 	{0x302A, 0x0008},
 	{0x302C, 0x0002},
@@ -589,6 +592,7 @@ static const struct ar0234_reg mode_1280x960_8bit_4lane[] = {
 	{0x3270, 0x0100},
 	{0x3270, 0x0100},
 };
+*/
 
 static const struct ar0234_reg mode_1280x960_10bit_2lane[] = {
 	{0x0000, 0x00C8},
@@ -910,6 +914,7 @@ static const struct ar0234_reg mode_1280x960_10bit_2lane[] = {
 	{0x3EEE, 0xA4AA},
 };
 
+/*
 static const struct ar0234_reg mode_1920x1200_10bit_2lane[] = {
 	{0x0000, 0x00c8},
 	{0x301A, 0x00D9}, // RESET_REGISTER
@@ -1227,13 +1232,14 @@ static const struct ar0234_reg mode_1920x1200_10bit_2lane[] = {
 	{0x3ED4, 0x031F}, // RESERVED_MFR_3ED4
 	{0x3EEE, 0xA4AA}, // RESERVED_MFR_3EEE
 };
+*/
 
 static const s64 link_freq_menu_items[] = {
 	AR0234_LINK_FREQ_360MHZ,
-	AR0234_LINK_FREQ_300MHZ,
-	AR0234_LINK_FREQ_288MHZ,
-	AR0234_LINK_FREQ_240MHZ,
-	AR0234_LINK_FREQ_22_5MHZ,
+	// AR0234_LINK_FREQ_300MHZ,
+	// AR0234_LINK_FREQ_288MHZ,
+	// AR0234_LINK_FREQ_240MHZ,
+	// AR0234_LINK_FREQ_22_5MHZ,
 };
 
 static const struct ar0234_link_freq_config link_freq_configs[] = {
@@ -1244,34 +1250,34 @@ static const struct ar0234_link_freq_config link_freq_configs[] = {
 			.regs = freq_1280x960_10bit_2lane_360M,
 		}
 	},
-	[AR0234_LINK_FREQ_300MBPS] = {
-		.reg_list = {
-			.num_of_regs =
-				ARRAY_SIZE(freq_1280x960_10bit_4lane_300M),
-			.regs = freq_1280x960_10bit_4lane_300M,
-		}
-	},
-	[AR0234_LINK_FREQ_288MBPS] = {
-		.reg_list = {
-			.num_of_regs =
-				ARRAY_SIZE(freq_1280x960_8bit_2lane_288M),
-			.regs = freq_1280x960_8bit_2lane_288M,
-		}
-	},
-	[AR0234_LINK_FREQ_240MBPS] = {
-		.reg_list = {
-			.num_of_regs =
-				ARRAY_SIZE(freq_1280x960_8bit_4lane_240M),
-			.regs = freq_1280x960_8bit_4lane_240M,
-		}
-	},
-	[AR0234_LINK_FREQ_22_5MBPS] = {
-		.reg_list = {
-			.num_of_regs =
-				ARRAY_SIZE(freq_1920x1200_10bit_2lane_22_5M),
-			.regs = freq_1920x1200_10bit_2lane_22_5M,
-		}
-	},
+	// [AR0234_LINK_FREQ_300MBPS] = {
+	// 	.reg_list = {
+	// 		.num_of_regs =
+	// 			ARRAY_SIZE(freq_1280x960_10bit_4lane_300M),
+	// 		.regs = freq_1280x960_10bit_4lane_300M,
+	// 	}
+	// },
+	// [AR0234_LINK_FREQ_288MBPS] = {
+	// 	.reg_list = {
+	// 		.num_of_regs =
+	// 			ARRAY_SIZE(freq_1280x960_8bit_2lane_288M),
+	// 		.regs = freq_1280x960_8bit_2lane_288M,
+	// 	}
+	// },
+	// [AR0234_LINK_FREQ_240MBPS] = {
+	// 	.reg_list = {
+	// 		.num_of_regs =
+	// 			ARRAY_SIZE(freq_1280x960_8bit_4lane_240M),
+	// 		.regs = freq_1280x960_8bit_4lane_240M,
+	// 	}
+	// },
+	// [AR0234_LINK_FREQ_22_5MBPS] = {
+	// 	.reg_list = {
+	// 		.num_of_regs =
+	// 			ARRAY_SIZE(freq_1920x1200_10bit_2lane_22_5M),
+	// 		.regs = freq_1920x1200_10bit_2lane_22_5M,
+	// 	}
+	// },
 };
 
 static const struct ar0234_mode supported_modes[] = {
@@ -1291,44 +1297,44 @@ static const struct ar0234_mode supported_modes[] = {
 		},
 		.link_freq_index = -1,
 	},
-	{
-		.width = WIN_WIDTH,
-		.height = WIN_HEIGHT,
-		.hts = 2464,
-		.vts_def = 2435,
-		.vts_min = 2435,
-		.code = MEDIA_BUS_FMT_SGRBG8_1X8,
-		.lanes = 4,
-		.fps = 40,
-		.bpp = 8,
-		.reg_list = {
-			.num_of_regs = ARRAY_SIZE(mode_1280x960_8bit_4lane),
-			.regs = mode_1280x960_8bit_4lane,
-		},
-		.link_freq_index = AR0234_LINK_FREQ_240MBPS,
-	},
-	{
-		.width = 1920,
-		.height = 1200,
-		.hts = 2464,
-		.vts_def = 2435,
-		.vts_min = 2435,
-		.code = MEDIA_BUS_FMT_SGRBG10_1X10,
-		.lanes = 2,
-		.fps = 30,
-		.bpp = 10,
-		.reg_list = {
-			.num_of_regs = ARRAY_SIZE(mode_1920x1200_10bit_2lane),
-			.regs = mode_1920x1200_10bit_2lane,
-		},
-		.link_freq_index = AR0234_LINK_FREQ_22_5MBPS,
-	},
+	// {
+	// 	.width = WIN_WIDTH,
+	// 	.height = WIN_HEIGHT,
+	// 	.hts = 2464,
+	// 	.vts_def = 2435,
+	// 	.vts_min = 2435,
+	// 	.code = MEDIA_BUS_FMT_SGRBG8_1X8,
+	// 	.lanes = 4,
+	// 	.fps = 40,
+	// 	.bpp = 8,
+	// 	.reg_list = {
+	// 		.num_of_regs = ARRAY_SIZE(mode_1280x960_8bit_4lane),
+	// 		.regs = mode_1280x960_8bit_4lane,
+	// 	},
+	// 	.link_freq_index = AR0234_LINK_FREQ_240MBPS,
+	// },
+	// {
+	// 	.width = 1920,
+	// 	.height = 1200,
+	// 	.hts = 2464,
+	// 	.vts_def = 2435,
+	// 	.vts_min = 2435,
+	// 	.code = MEDIA_BUS_FMT_SGRBG10_1X10,
+	// 	.lanes = 2,
+	// 	.fps = 30,
+	// 	.bpp = 10,
+	// 	.reg_list = {
+	// 		.num_of_regs = ARRAY_SIZE(mode_1920x1200_10bit_2lane),
+	// 		.regs = mode_1920x1200_10bit_2lane,
+	// 	},
+	// 	.link_freq_index = AR0234_LINK_FREQ_22_5MBPS,
+	// },
 };
 
 
 static u32 supported_formats[] = {
 	MEDIA_BUS_FMT_SGRBG10_1X10,
-	MEDIA_BUS_FMT_SGRBG8_1X8,
+	// MEDIA_BUS_FMT_SGRBG8_1X8,
 };
 
 struct ar0234 {

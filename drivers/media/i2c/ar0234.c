@@ -1295,7 +1295,7 @@ static const struct ar0234_mode supported_modes[] = {
 			.num_of_regs = ARRAY_SIZE(mode_1280x960_10bit_2lane),
 			.regs = mode_1280x960_10bit_2lane,
 		},
-		.link_freq_index = -1,
+		.link_freq_index = 0,
 	},
 	// {
 	// 	.width = WIN_WIDTH,
@@ -1806,7 +1806,7 @@ static int ar0234_start_streaming(struct ar0234 *ar0234)
 	}
 
 	link_freq_index = ar0234->cur_mode->link_freq_index;
-	if (link_freq_index >= 0) {
+	if (link_freq_index > 0) {
 		reg_list = &link_freq_configs[link_freq_index].reg_list;
 		ret = ar0234_write_reg_list(ar0234, reg_list);
 		if (ret) {
